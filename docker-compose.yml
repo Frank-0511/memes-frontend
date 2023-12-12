@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: memes-frontend
+    container_name: memes-frontend
+    ports:
+      - ${FRONTEND_PORT_EXTERNAL}:${FRONTEND_PORT_INTERNAL}
+    volumes:
+      - ./src:/usr/src/app/src
+      - ./public:/usr/src/app/public
