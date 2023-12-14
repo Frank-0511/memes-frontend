@@ -1,7 +1,7 @@
 "use client";
 
 import { Meme, MemesContextType } from "@/models/meme";
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 import { getMemesApi } from "@/services/memes";
 import { useSession } from "next-auth/react";
@@ -12,15 +12,21 @@ const MemesProvider = ({ children }: { children: React.ReactNode }) => {
   const [memes, setMemes] = useState<Meme[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState<number>(5);
   const [totalPage, setTotalPage] = useState(0);
   const [totalMemes, setTotalMemes] = useState(0);
   const { data: session, status } = useSession();
+
+  useEffect(() => {
+    fetchMemes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, pageSize]);
 
   const fetchMemes = async () => {
     if (status !== "authenticated") return;
     try {
       setLoading(true);
+      setMemes([]);
       const response = await getMemesApi({
         page,
         pageSize,

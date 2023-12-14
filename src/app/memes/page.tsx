@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@nextui-org/react";
+import ModalCreate from "./components/ModalCreate";
 import TableMemes from "./components/TableMemes";
 import { useEffect } from "react";
 import { useMemesContext } from "@/context/MemeContext";
@@ -15,12 +15,10 @@ const MemesPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
   return (
-    <div className="px-4">
+    <div className="px-4 pb-8">
       <div className="flex items-center justify-between px-4 py-6">
         <h1 className="text-3xl font-bold">Memes</h1>
-        <Button color="primary" size="md">
-          Crear
-        </Button>
+        <ModalCreate />
       </div>
       <TableMemes />
     </div>

@@ -2,7 +2,7 @@
 
 import { Button, Input } from "@nextui-org/react";
 import { Controller, useForm } from "react-hook-form";
-import { LoginSchema, LoginSchemaType } from "../schema";
+import { LoginSchema, LoginSchemaType } from "./schema";
 
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -13,7 +13,7 @@ export const LoginForm = () => {
   const {
     control,
     handleSubmit,
-    formState: { isSubmitting, isValid },
+    formState: { isSubmitting },
   } = useForm<LoginSchemaType>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -29,12 +29,12 @@ export const LoginForm = () => {
       redirect: false,
     });
 
-    // if (responseNextAuth?.error) {
-    //   console.log(
-    //     "🚀 ~ responseNextAuth.error",
-    //     responseNextAuth.error.split(",")
-    //   );
-    // }
+    if (responseNextAuth?.error) {
+      console.error(
+        "🚀 ~ responseNextAuth.error",
+        responseNextAuth.error.split(",")
+      );
+    }
 
     router.push("/");
   };
@@ -54,6 +54,7 @@ export const LoginForm = () => {
         }) => (
           <Input
             autoComplete="email"
+            classNames={{ inputWrapper: "bg-white" }}
             errorMessage={error?.message}
             isInvalid={invalid}
             label="Email"
@@ -74,6 +75,7 @@ export const LoginForm = () => {
         }) => (
           <Input
             autoComplete="current-password"
+            classNames={{ inputWrapper: "bg-white" }}
             errorMessage={error?.message}
             isInvalid={invalid}
             label="Password"

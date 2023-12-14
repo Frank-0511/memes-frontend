@@ -1,6 +1,9 @@
 import {
   Button,
   Pagination,
+  Select,
+  SelectItem,
+  Spinner,
   Table,
   TableBody,
   TableCell,
@@ -9,16 +12,21 @@ import {
   TableRow,
   getKeyValue,
 } from "@nextui-org/react";
+import { Key, useEffect, useState } from "react";
 
 import Image from "next/image";
-import { Key } from "react";
 import { MaterialSymbolsDelete } from "@/assets/icons/MaterialSymbolsDelete";
 import { MaterialSymbolsEdit } from "@/assets/icons/MaterialSymbolsEdit";
 import { MdiEye } from "@/assets/icons/MdiEye";
 import { useMemesContext } from "@/context/MemeContext";
 
 const TableMemes = () => {
-  const { memes, page, setPage, totalPage } = useMemesContext();
+  const { memes, page, setPage, totalPage, loading, pageSize, setPageSize } =
+    useMemesContext();
+  const [initialLoading, setInitialLoading] = useState(true);
+  useEffect(() => {
+    setInitialLoading(false);
+  }, []);
 
   const renderTableCell = (columnKey: Key, item: any) => {
     if (columnKey === "actions")
@@ -72,21 +80,55 @@ const TableMemes = () => {
     <Table
       aria-label="Example table with client side pagination"
       bottomContent={
-        <div className="flex w-full justify-center">
-          <Pagination
-            isCompact
-            showControls
-            showShadow
-            color="secondary"
-            page={page}
-            total={totalPage}
-            onChange={(page: number) => setPage(page)}
-          />
-        </div>
+        totalPage > 0 ? (
+          <div className="flex w-full justify-center">
+            <Pagination
+              isCompact
+              showControls
+              showShadow
+              color="secondary"
+              page={page}
+              total={totalPage}
+              onChange={(page: number) => setPage(page)}
+            />
+
+            <Select
+              className="max-w-[70px] ml-4"
+              style={{ height: "36px" }}
+              selectedKeys={[pageSize] as Key[]}
+              onSelectionChange={(selectedKeys) =>
+                setPageSize(Array.from(selectedKeys)[0] as number)
+              }
+            >
+              {[
+                {
+                  label: "5",
+                  value: 5,
+                },
+                {
+                  label: "10",
+                  value: 10,
+                },
+                {
+                  label: "15",
+                  value: 15,
+                },
+                {
+                  label: "20",
+                  value: 20,
+                },
+              ].map((pageSize) => (
+                <SelectItem key={pageSize.value} value={pageSize.value}>
+                  {pageSize.label}
+                </SelectItem>
+              ))}
+            </Select>
+          </div>
+        ) : null
       }
       classNames={{
-        wrapper: "min-h-[222px] bg-transparent shadow-none",
-        table: "bg-sky-100  rounded-lg",
+        wrapper: "bg-transparent shadow-none",
+        table: "bg-sky-100  rounded-lg min-h-[400px]",
         th: "bg-sky-100 text-black text-lg",
       }}
       isStriped
@@ -101,7 +143,11 @@ const TableMemes = () => {
           Acciones
         </TableColumn>
       </TableHeader>
-      <TableBody items={memes}>
+      <TableBody
+        items={memes}
+        loadingContent={<Spinner label="Loading..." />}
+        loadingState={initialLoading || loading ? "loading" : "idle"}
+      >
         {(item) => (
           <TableRow key={item.name}>
             {(columnKey) => (
